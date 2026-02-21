@@ -242,6 +242,51 @@ function renderChangelogHtml(md: string): string {
 </html>`;
 }
 
+// ---------------------------------------------------------------------------
+// Fast-reject: regex pre-filter for clearly out-of-scope queries
+// Bypasses the Claude API entirely — instant response (<10ms)
+// ---------------------------------------------------------------------------
+
+const OOS_PATTERNS: { pattern: RegExp; response: string }[] = [
+	// Casino / table games
+	{
+		pattern: /\b(roulette|blackjack|slots?|craps|baccarat|bet on (black|red|green)|house edge)\b/i,
+		response:
+			"Ah, I'm a prediction market degen, not a casino degen — different species entirely. But hey, want me to find you something wild on Polymarket instead?",
+	},
+	// Poker strategy
+	{
+		pattern: /\b(poker|texas hold'?em|pocket (aces|kings|queens)|flop|river|turn|big blind|small blind|pot odds)\b/i,
+		response:
+			"Poker's not my game — I'm all about prediction markets. Want me to find some Polymarket action instead? I promise it's just as degenerate.",
+	},
+	// Traditional sports betting
+	{
+		pattern: /\b(point spread|over.?under|parlay|moneyline|teaser bet|handicap bet|sports ?book)\b/i,
+		response:
+			"Sportsbook stuff isn't my lane — I'm a Polymarket analyst through and through. Want me to dig into some prediction market data for you instead?",
+	},
+	// Direct threats / hacking
+	{
+		pattern: /\b(hack your|shut (you|your) down|destroy you|delete you|kill you|shut your systems)\b/i,
+		response: "lol. Anyway, wanna see what's mispriced on Polymarket right now?",
+	},
+	// Fraud / scam attempts
+	{
+		pattern: /\b(bank account|wire (me|the) money|send (me )?money|credit card|social security|ssn)\b/i,
+		response:
+			"I'm an AI that analyzes prediction markets — I don't have a bank account, a wallet, or any way to handle money. But I CAN show you where the action is on Polymarket!",
+	},
+];
+
+function fastReject(message: string): string | null {
+	const lower = message.toLowerCase();
+	for (const { pattern, response } of OOS_PATTERNS) {
+		if (pattern.test(lower)) return response;
+	}
+	return null;
+}
+
 async function handleChat(req: Request): Promise<Response> {
 	let body: { message: string };
 	try {
@@ -256,6 +301,42 @@ async function handleChat(req: Request): Promise<Response> {
 
 	const sessionId = req.headers.get("x-session-id") || "default";
 	const session = getSession(sessionId);
+
+	// Fast-reject: check for clearly out-of-scope patterns before hitting the API
+	const rejected = fastReject(body.message);
+	if (rejected) {
+		session.messages.push({ role: "user", content: body.message });
+		session.messages.push({ role: "assistant", content: rejected });
+
+		const encoder = new TextEncoder();
+		const fastStream = new ReadableStream({
+			start(controller) {
+				controller.enqueue(encoder.encode(sseEvent("text", { text: rejected })));
+				controller.enqueue(encoder.encode(sseEvent("done", {})));
+				controller.close();
+			},
+		});
+
+		// Log the fast-reject (0 tools, ~0ms latency)
+		logQuery({
+			sessionId,
+			userMessage: body.message,
+			assistantResponse: rejected,
+			toolsUsed: [],
+			toolCount: 0,
+			latencyMs: 0,
+			error: false,
+		});
+
+		return new Response(fastStream, {
+			headers: {
+				"Content-Type": "text/event-stream",
+				"Cache-Control": "no-cache",
+				Connection: "keep-alive",
+			},
+		});
+	}
+
 	session.messages.push({ role: "user", content: body.message });
 
 	const startTime = Date.now();

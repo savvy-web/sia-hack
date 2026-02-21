@@ -4,6 +4,30 @@ All notable changes to Overfit are documented here.
 
 ## [Unreleased]
 
+### Self-Improvement Cycle 3 — 2026-02-21
+
+Proposals generated from 26 user queries (9 sessions) via `/self-improve`.
+
+#### Performance
+
+- **Fast-reject pre-filter** (#20) — Regex-based pre-classification layer that
+  catches clearly out-of-scope queries (casino games, poker, sports betting,
+  threats, fraud attempts) and returns a canned response instantly, bypassing the
+  Claude API entirely. Reduces latency on OOS queries from 6-44s to <10ms.
+
+#### Prompt Improvements
+
+- **Scope boundary strengthening** (#15) — Explicit "NOT in scope" list added to
+  system prompt with responsible gambling framing. Harm-reduction language for
+  users showing signs of reckless betting.
+- **Insider information guardrails** (#18) — New prompt section that instantly
+  declines insider info/illegal advantage queries with a firm 1-sentence
+  redirect instead of deliberating.
+- **Adversarial resistance refinement** (#14) — Expanded jailbreak section with
+  specific pattern recognition for threats, fraud/scam attempts, blackmail,
+  false authority claims, and persona hijacking. Each gets a 1-sentence
+  deflection template.
+
 ### Rebrand — 2026-02-21
 
 Renamed from "Oracle" to **Overfit: Your Degenerate Friend** for the
