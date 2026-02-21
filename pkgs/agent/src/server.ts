@@ -73,6 +73,7 @@ setInterval(
 // ---------------------------------------------------------------------------
 
 const indexHtml = readFileSync(resolve(__dirname, "index.html"), "utf-8");
+const changelogMd = readFileSync(resolve(__dirname, "../../../CHANGELOG.md"), "utf-8");
 
 // ---------------------------------------------------------------------------
 // SSE helpers
@@ -134,9 +135,112 @@ const server = Bun.serve({
 			return Response.json({ ok: true });
 		}
 
+		// Changelog page
+		if (url.pathname === "/changelog" && req.method === "GET") {
+			return new Response(renderChangelogHtml(changelogMd), {
+				headers: { "Content-Type": "text/html; charset=utf-8" },
+			});
+		}
+
 		return new Response("Not Found", { status: 404 });
 	},
 });
+
+function renderChangelogHtml(md: string): string {
+	let html = md
+		// Code blocks
+		.replace(/```(\w*)\n([\s\S]*?)```/g, "<pre><code>$2</code></pre>")
+		// Inline code
+		.replace(/`([^`]+)`/g, "<code>$1</code>")
+		// Headers
+		.replace(/^#### (.+)$/gm, "<h4>$1</h4>")
+		.replace(/^### (.+)$/gm, "<h3>$1</h3>")
+		.replace(/^## (.+)$/gm, "<h2>$1</h2>")
+		.replace(/^# (.+)$/gm, "<h1>$1</h1>")
+		// Bold
+		.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+		// Italic
+		.replace(/\*([^*]+)\*/g, "<em>$1</em>")
+		// Links
+		.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+		// List items
+		.replace(/^- (.+)$/gm, "<li>$1</li>")
+		// Line breaks
+		.replace(/\n/g, "<br>");
+
+	// Wrap consecutive <li> in <ul>
+	html = html.replace(/((?:<li>.*?<\/li><br>?)+)/g, "<ul>$1</ul>");
+	html = html.replace(/<ul>(.*?)<\/ul>/gs, (_, inner) => `<ul>${inner.replace(/<br>/g, "")}</ul>`);
+	// Clean stray <br> after block elements
+	html = html.replace(/(<\/h[1-4]>)<br>/g, "$1");
+	html = html.replace(/(<\/ul>)<br>/g, "$1");
+	html = html.replace(/(<\/pre>)<br>/g, "$1");
+
+	return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Overfit — Changelog</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace;
+    background: #0a0a0f;
+    color: #e0e0e0;
+    line-height: 1.7;
+    padding: 40px 24px;
+  }
+  .container { max-width: 720px; margin: 0 auto; }
+  a { color: #ff2d95; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .back {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: #888; font-size: 13px; margin-bottom: 32px;
+    text-decoration: none; transition: color 0.2s;
+  }
+  .back:hover { color: #ff2d95; }
+  h1 {
+    font-size: 28px; font-weight: 700;
+    background: linear-gradient(135deg, #ff2d95, #ff8c00, #ffdd00);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; margin-bottom: 32px;
+  }
+  h2 {
+    font-size: 20px; color: #ff8c00;
+    margin: 32px 0 16px; padding-bottom: 8px;
+    border-bottom: 1px solid #2a1a3e;
+  }
+  h3 {
+    font-size: 16px;
+    background: linear-gradient(135deg, #ff2d95, #ff8c00);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; margin: 24px 0 12px;
+  }
+  h4 { font-size: 14px; color: #ffdd00; margin: 20px 0 8px; }
+  strong { color: #fff; }
+  code {
+    background: #1a1a2e; padding: 2px 6px; border-radius: 4px;
+    font-size: 13px; color: #ff79c6;
+  }
+  pre {
+    background: #12121c; border: 1px solid #2a1a3e; border-radius: 8px;
+    padding: 12px; overflow-x: auto; margin: 8px 0;
+  }
+  pre code { background: none; padding: 0; color: #e0e0e0; }
+  ul { padding-left: 24px; margin: 4px 0; }
+  li { margin: 4px 0; }
+  li strong { color: #ffdd00; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back" href="/">← back to overfit</a>
+  ${html}
+</div>
+</body>
+</html>`;
+}
 
 async function handleChat(req: Request): Promise<Response> {
 	let body: { message: string };

@@ -27,6 +27,7 @@ COPY --from=deps /app .
 COPY pkgs/shared/ pkgs/shared/
 COPY pkgs/ingestion/ pkgs/ingestion/
 COPY pkgs/agent/ pkgs/agent/
+COPY CHANGELOG.md .
 
 EXPOSE 8080
 

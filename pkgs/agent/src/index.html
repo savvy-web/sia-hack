@@ -65,6 +65,32 @@
     color: #ff2d95;
   }
 
+  header .header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  #cycle-version {
+    background: linear-gradient(135deg, #1a1a2e, #2a1a3e);
+    border: 1px solid #ff2d9540;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 11px;
+    color: #ff2d95;
+    font-weight: 600;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  #cycle-version:hover {
+    background: linear-gradient(135deg, #2a1a3e, #3a2a5e);
+    border-color: #ff2d9580;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px #ff2d9520;
+  }
+
   #degen-score {
     background: linear-gradient(135deg, #1a1a2e, #2a1a3e);
     border: 1px solid #ff2d9540;
@@ -486,7 +512,10 @@
       <div class="subtitle">Your Degenerate Friend — <span>powered by vibes & polymarket</span></div>
     </div>
   </div>
-  <div id="degen-score">🎲 Degen Score: 0</div>
+  <div class="header-right">
+    <a id="cycle-version" href="/changelog" target="_blank">🧬 Cycle 2</a>
+    <div id="degen-score">🎲 Degen Score: 0</div>
+  </div>
 </header>
 
 <div id="messages">
