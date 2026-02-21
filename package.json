@@ -17,6 +17,7 @@
 	"type": "module",
 	"scripts": {
 		"build": "turbo run build:dev build:prod --log-order=grouped",
+		"deploy": "turbo run deploy --log-order=grouped",
 		"build:dev": "turbo run build:dev --log-order=grouped",
 		"build:prod": "turbo run build:prod --log-order=grouped",
 		"ci:build": "CI=\"true\" turbo run build:dev build:prod --log-order=grouped --output-logs=full",

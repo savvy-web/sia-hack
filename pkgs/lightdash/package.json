@@ -1,0 +1,18 @@
+{
+	"name": "@savvy-web/lightdash",
+	"version": "0.0.0",
+	"private": true,
+	"description": "Lightdash analytics project",
+	"license": "MIT",
+	"author": {
+		"name": "C. Spencer Beggs",
+		"email": "spencer@savvyweb.systems",
+		"url": "https://savvyweb.systems"
+	},
+	"scripts": {
+		"deploy": "lightdash lint && lightdash deploy"
+	},
+	"devDependencies": {
+		"@savvy-web/rslib-builder": "^0.14.5"
+	}
+}

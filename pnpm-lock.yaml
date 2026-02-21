@@ -66,6 +66,12 @@ importers:
         specifier: catalog:silk
         version: 4.0.18(@types/node@25.3.0)(jiti@2.6.1)(yaml@2.8.2)
 
+  pkgs/lightdash:
+    devDependencies:
+      '@savvy-web/rslib-builder':
+        specifier: ^0.14.5
+        version: 0.14.5(@microsoft/api-extractor@7.56.3(@types/node@25.3.0))(@pnpm/logger@1001.0.1)(@rslib/core@0.19.6(@microsoft/api-extractor@7.56.3(@types/node@25.3.0))(@typescript/native-preview@7.0.0-dev.20260220.1)(typescript@5.9.3))(@types/node@25.3.0)(@typescript/native-preview@7.0.0-dev.20260220.1)(jiti@2.6.1)(typescript@5.9.3)
+
 packages:
 
   '@ast-grep/napi-darwin-arm64@0.37.0':

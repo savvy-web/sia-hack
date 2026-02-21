@@ -1,0 +1,29 @@
+type: model
+name: users
+label: Users
+description: Supabase auth users - placeholder model
+sql_from: auth.users
+primary_key: id
+
+dimensions:
+  - name: id
+    type: string
+    sql: ${TABLE}.id
+    label: User ID
+
+  - name: email
+    type: string
+    sql: ${TABLE}.email
+    label: Email
+
+  - name: created_at
+    type: timestamp
+    sql: ${TABLE}.created_at
+    label: Created At
+    time_intervals: [DAY, WEEK, MONTH, YEAR]
+
+metrics:
+  total_users:
+    type: count
+    sql: ${TABLE}.id
+    label: Total Users
