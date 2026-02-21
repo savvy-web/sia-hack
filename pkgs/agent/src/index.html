@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Oracle — Prediction Market Intelligence</title>
+<title>Overfit — Your Degenerate Friend</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -18,22 +18,73 @@
 
   header {
     padding: 16px 24px;
-    border-bottom: 1px solid #1a1a2e;
+    border-bottom: 1px solid #2a1a2e;
     background: #0d0d14;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  header .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
 
   header h1 {
-    font-size: 18px;
-    font-weight: 600;
-    color: #00d4ff;
+    font-size: 20px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ff2d95, #ff8c00, #ffdd00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     letter-spacing: 0.5px;
+  }
+
+  header .fire {
+    font-size: 22px;
+    animation: fireWiggle 1.5s ease-in-out infinite;
+    display: inline-block;
+  }
+
+  @keyframes fireWiggle {
+    0%, 100% { transform: rotate(-5deg) scale(1); }
+    25% { transform: rotate(5deg) scale(1.1); }
+    50% { transform: rotate(-3deg) scale(1.05); }
+    75% { transform: rotate(4deg) scale(1.08); }
   }
 
   header .subtitle {
     font-size: 12px;
-    color: #666;
+    color: #888;
     margin-top: 2px;
+  }
+
+  header .subtitle span {
+    color: #ff2d95;
+  }
+
+  #degen-score {
+    background: linear-gradient(135deg, #1a1a2e, #2a1a3e);
+    border: 1px solid #ff2d9540;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: #ff8c00;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: all 0.3s;
+  }
+
+  #degen-score.pulse {
+    animation: scorePulse 0.5s ease-out;
+  }
+
+  @keyframes scorePulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 #ff2d9560; }
+    50% { transform: scale(1.1); box-shadow: 0 0 20px 4px #ff2d9540; }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 #ff2d9500; }
   }
 
   #messages {
@@ -45,6 +96,11 @@
     gap: 16px;
   }
 
+  #messages::-webkit-scrollbar { width: 6px; }
+  #messages::-webkit-scrollbar-track { background: transparent; }
+  #messages::-webkit-scrollbar-thumb { background: #2a1a3e; border-radius: 3px; }
+  #messages::-webkit-scrollbar-thumb:hover { background: #ff2d9540; }
+
   .msg {
     max-width: 800px;
     width: 100%;
@@ -53,15 +109,22 @@
   }
 
   .msg.user {
-    background: #1a1a2e;
-    border: 1px solid #2a2a4e;
+    background: linear-gradient(135deg, #1a1a2e, #201a30);
+    border: 1px solid #3a2a5e;
     border-radius: 12px;
     padding: 12px 16px;
     color: #c0c0d0;
+    animation: slideIn 0.2s ease-out;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   .msg.assistant {
     padding: 4px 0;
+    animation: slideIn 0.2s ease-out;
   }
 
   .msg.assistant .content {
@@ -72,7 +135,10 @@
   .msg.assistant .content h1,
   .msg.assistant .content h2,
   .msg.assistant .content h3 {
-    color: #00d4ff;
+    background: linear-gradient(135deg, #ff2d95, #ff8c00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     margin: 16px 0 8px;
   }
 
@@ -80,7 +146,7 @@
   .msg.assistant .content h2 { font-size: 17px; }
   .msg.assistant .content h3 { font-size: 15px; }
 
-  .msg.assistant .content strong { color: #fff; }
+  .msg.assistant .content strong { color: #ffdd00; }
 
   .msg.assistant .content code {
     background: #1a1a2e;
@@ -92,7 +158,7 @@
 
   .msg.assistant .content pre {
     background: #12121c;
-    border: 1px solid #1a1a2e;
+    border: 1px solid #2a1a3e;
     border-radius: 8px;
     padding: 12px;
     overflow-x: auto;
@@ -120,22 +186,22 @@
 
   .msg.assistant .content th,
   .msg.assistant .content td {
-    border: 1px solid #2a2a4e;
+    border: 1px solid #2a1a3e;
     padding: 6px 10px;
     text-align: left;
   }
 
   .msg.assistant .content th {
     background: #1a1a2e;
-    color: #00d4ff;
+    color: #ff8c00;
   }
 
   .tool-badge {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: #1a1a2e;
-    border: 1px solid #2a2a4e;
+    background: linear-gradient(135deg, #1a1a2e, #201a30);
+    border: 1px solid #3a2a5e;
     border-radius: 6px;
     padding: 4px 10px;
     margin: 4px 0;
@@ -143,22 +209,25 @@
     color: #888;
   }
 
-  .tool-badge .dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #ffa500;
+  .tool-badge .icon {
+    font-size: 14px;
+    animation: slotSpin 0.6s ease-in-out infinite;
   }
 
-  .tool-badge.done .dot {
-    background: #00cc66;
+  .tool-badge.done .icon {
+    animation: none;
+  }
+
+  @keyframes slotSpin {
+    0% { transform: rotateX(0deg); }
+    100% { transform: rotateX(360deg); }
   }
 
   .cursor {
     display: inline-block;
     width: 2px;
     height: 16px;
-    background: #00d4ff;
+    background: #ff2d95;
     margin-left: 2px;
     vertical-align: text-bottom;
     animation: blink 0.8s step-end infinite;
@@ -177,6 +246,45 @@
     max-width: 800px;
     margin: 0 auto;
     width: 100%;
+    animation: errorShake 0.4s ease-out;
+  }
+
+  @keyframes errorShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+
+  #welcome-state {
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
+    padding: 60px 20px 20px;
+  }
+
+  #welcome-state .big-emoji {
+    font-size: 64px;
+    margin-bottom: 16px;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  #welcome-state .tagline {
+    font-size: 16px;
+    color: #888;
+    margin-bottom: 24px;
+    font-style: italic;
+  }
+
+  #welcome-state .tagline span {
+    color: #ff2d95;
   }
 
   #suggestions {
@@ -187,27 +295,30 @@
     flex-wrap: wrap;
     gap: 8px;
     padding: 8px 0;
+    justify-content: center;
   }
 
   .chip {
-    background: #1a1a2e;
-    border: 1px solid #2a2a4e;
+    background: linear-gradient(135deg, #1a1a2e, #201a30);
+    border: 1px solid #3a2a5e;
     border-radius: 20px;
     padding: 8px 16px;
     font-size: 13px;
-    color: #aaa;
+    color: #bbb;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: all 0.2s;
   }
 
   .chip:hover {
-    background: #2a2a4e;
-    color: #00d4ff;
-    border-color: #00d4ff40;
+    background: linear-gradient(135deg, #2a1a3e, #3a2a5e);
+    color: #ff2d95;
+    border-color: #ff2d9560;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px #ff2d9520;
   }
 
   #input-area {
-    border-top: 1px solid #1a1a2e;
+    border-top: 1px solid #2a1a2e;
     padding: 16px 24px;
     background: #0d0d14;
     flex-shrink: 0;
@@ -223,7 +334,7 @@
   #input {
     flex: 1;
     background: #12121c;
-    border: 1px solid #2a2a4e;
+    border: 1px solid #3a2a5e;
     border-radius: 8px;
     padding: 12px 16px;
     color: #e0e0e0;
@@ -233,40 +344,42 @@
     resize: none;
     min-height: 44px;
     max-height: 120px;
+    transition: border-color 0.2s;
   }
 
-  #input:focus { border-color: #00d4ff40; }
+  #input:focus { border-color: #ff2d9560; box-shadow: 0 0 12px #ff2d9520; }
 
   #input::placeholder { color: #555; }
 
   #send-btn {
-    background: #00d4ff;
+    background: linear-gradient(135deg, #ff2d95, #ff8c00);
     border: none;
     border-radius: 8px;
     padding: 0 20px;
-    color: #0a0a0f;
-    font-weight: 600;
+    color: #fff;
+    font-weight: 700;
     font-size: 14px;
     cursor: pointer;
-    transition: opacity 0.15s;
+    transition: all 0.2s;
     flex-shrink: 0;
   }
 
-  #send-btn:hover { opacity: 0.85; }
-  #send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  #send-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px #ff2d9540; }
+  #send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
 
   #clear-btn {
     background: transparent;
-    border: 1px solid #2a2a4e;
+    border: 1px solid #3a2a5e;
     border-radius: 8px;
     padding: 0 14px;
     color: #666;
     font-size: 13px;
     cursor: pointer;
     flex-shrink: 0;
+    transition: all 0.2s;
   }
 
-  #clear-btn:hover { color: #aaa; border-color: #444; }
+  #clear-btn:hover { color: #ff2d95; border-color: #ff2d9560; }
 
   /* Password overlay */
   #auth-overlay {
@@ -283,7 +396,7 @@
 
   #auth-box {
     background: #0d0d14;
-    border: 1px solid #1a1a2e;
+    border: 1px solid #2a1a3e;
     border-radius: 16px;
     padding: 40px;
     text-align: center;
@@ -291,14 +404,24 @@
     width: 100%;
   }
 
+  #auth-box .auth-emoji {
+    font-size: 48px;
+    margin-bottom: 12px;
+    animation: float 3s ease-in-out infinite;
+  }
+
   #auth-box h2 {
-    color: #00d4ff;
     font-size: 22px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ff2d95, #ff8c00, #ffdd00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     margin-bottom: 6px;
   }
 
   #auth-box p {
-    color: #666;
+    color: #888;
     font-size: 13px;
     margin-bottom: 24px;
   }
@@ -306,7 +429,7 @@
   #auth-password {
     width: 100%;
     background: #12121c;
-    border: 1px solid #2a2a4e;
+    border: 1px solid #3a2a5e;
     border-radius: 8px;
     padding: 12px 16px;
     color: #e0e0e0;
@@ -316,22 +439,23 @@
     margin-bottom: 12px;
   }
 
-  #auth-password:focus { border-color: #00d4ff40; }
+  #auth-password:focus { border-color: #ff2d9560; box-shadow: 0 0 12px #ff2d9520; }
 
   #auth-submit {
     width: 100%;
-    background: #00d4ff;
+    background: linear-gradient(135deg, #ff2d95, #ff8c00);
     border: none;
     border-radius: 8px;
     padding: 12px;
-    color: #0a0a0f;
-    font-weight: 600;
+    color: #fff;
+    font-weight: 700;
     font-size: 14px;
     cursor: pointer;
+    transition: all 0.2s;
   }
 
-  #auth-submit:hover { opacity: 0.85; }
-  #auth-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+  #auth-submit:hover { transform: translateY(-1px); box-shadow: 0 4px 12px #ff2d9540; }
+  #auth-submit:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
   #auth-error {
     color: #ff4444;
@@ -345,34 +469,46 @@
 
 <div id="auth-overlay">
   <div id="auth-box">
-    <h2>Oracle</h2>
-    <p>Enter password to access the dashboard</p>
-    <input type="password" id="auth-password" placeholder="Password" autocomplete="off">
-    <button type="button" id="auth-submit">Unlock</button>
-    <div id="auth-error">Incorrect password. Try again.</div>
+    <div class="auth-emoji">🎰</div>
+    <h2>Overfit</h2>
+    <p>prove you're not a normie</p>
+    <input type="password" id="auth-password" placeholder="secret handshake..." autocomplete="off">
+    <button type="button" id="auth-submit">LFG</button>
+    <div id="auth-error">wrong password, ser. ngmi.</div>
   </div>
 </div>
 
 <header>
-  <h1>Oracle</h1>
-  <div class="subtitle">Prediction Market Intelligence — powered by Claude + Polymarket</div>
+  <div class="brand">
+    <span class="fire">🔥</span>
+    <div>
+      <h1>Overfit</h1>
+      <div class="subtitle">Your Degenerate Friend — <span>powered by vibes & polymarket</span></div>
+    </div>
+  </div>
+  <div id="degen-score">🎲 Degen Score: 0</div>
 </header>
 
 <div id="messages">
+  <div id="welcome-state">
+    <div class="big-emoji">🎲</div>
+    <div class="tagline" id="rotating-quote"></div>
+  </div>
   <div id="suggestions">
-    <div class="chip" data-q="What's the morning briefing?">Morning briefing</div>
-    <div class="chip" data-q="What are the highest volume markets right now?">Top markets</div>
-    <div class="chip" data-q="Tell me about crypto prediction markets">Crypto markets</div>
-    <div class="chip" data-q="Find markets where the outcome is most uncertain">Most uncertain</div>
-    <div class="chip" data-q="Compare the top political markets">Political markets</div>
+    <div class="chip" data-q="What's the morning degen briefing? Show me the juiciest markets.">🌅 Morning Degen Briefing</div>
+    <div class="chip" data-q="Where is the dumbest money right now?">🤡 Where's the Dumb Money?</div>
+    <div class="chip" data-q="Find me the most degenerate bet available with the best odds">🎰 Most Degen Bet</div>
+    <div class="chip" data-q="What are the biggest crypto prediction markets? Any mispriced?">🪙 Crypto Plays</div>
+    <div class="chip" data-q="Show me markets where someone is about to get rekt">💀 Who's Getting Rekt?</div>
+    <div class="chip" data-q="What political markets have the sharpest money vs dumb money divergence?">🏛️ Political Degen</div>
   </div>
 </div>
 
 <div id="input-area">
   <div id="input-row">
-    <textarea id="input" placeholder="Ask about prediction markets..." rows="1"></textarea>
-    <button type="button" id="send-btn">Send</button>
-    <button type="button" id="clear-btn">Clear</button>
+    <textarea id="input" placeholder="ask me something degenerate..." rows="1"></textarea>
+    <button type="button" id="send-btn">🚀 Send</button>
+    <button type="button" id="clear-btn">🗑️ Nuke</button>
   </div>
 </div>
 
@@ -382,14 +518,60 @@ const inputEl = document.getElementById('input');
 const sendBtn = document.getElementById('send-btn');
 const clearBtn = document.getElementById('clear-btn');
 const suggestionsEl = document.getElementById('suggestions');
+const welcomeState = document.getElementById('welcome-state');
 const authOverlay = document.getElementById('auth-overlay');
 const authPassword = document.getElementById('auth-password');
 const authSubmit = document.getElementById('auth-submit');
 const authError = document.getElementById('auth-error');
+const degenScoreEl = document.getElementById('degen-score');
+const rotatingQuote = document.getElementById('rotating-quote');
 
 let sessionId = crypto.randomUUID();
 let streaming = false;
 let authToken = sessionStorage.getItem('oracle_token');
+let degenScore = Number(sessionStorage.getItem('degen_score') || '0');
+
+// --- Degen quotes ---
+const DEGEN_QUOTES = [
+  "the market is always right... <span>until it isn't</span>",
+  "not financial advice. <span>definitely financial entertainment.</span>",
+  "where normies see chaos, <span>we see opportunity</span>",
+  "the house always wins. <span>unless you're the house.</span>",
+  "buy the rumor, sell the news, <span>ape the vibes</span>",
+  "risk management is for people <span>who hate money</span>",
+  "every degen was once a rational investor. <span>then it clicked.</span>",
+  "the dumbest money <span>is the money that stays on the sideline</span>",
+  "in a world of npcs, <span>be a market maker</span>",
+  "polymarket is just twitter <span>but you put your money where your mouth is</span>",
+];
+
+function showRandomQuote() {
+  rotatingQuote.innerHTML = DEGEN_QUOTES[Math.floor(Math.random() * DEGEN_QUOTES.length)];
+}
+showRandomQuote();
+setInterval(showRandomQuote, 8000);
+
+// --- Degen score ---
+function updateDegenScore(points) {
+  degenScore += points;
+  sessionStorage.setItem('degen_score', String(degenScore));
+  degenScoreEl.textContent = `🎲 Degen Score: ${degenScore}`;
+  degenScoreEl.classList.remove('pulse');
+  void degenScoreEl.offsetWidth; // force reflow
+  degenScoreEl.classList.add('pulse');
+}
+degenScoreEl.textContent = `🎲 Degen Score: ${degenScore}`;
+
+// --- Tool emoji mapping ---
+const TOOL_EMOJIS = {
+  query_database: '🔍',
+  get_live_price: '📈',
+  get_order_book: '📊',
+  fetch_gamma_market: '🌐',
+  get_improvement_proposals: '🧠',
+  analyze_order_flow: '🐋',
+  detect_mispricing: '🎯',
+};
 
 // --- Auth ---
 function showAuth() {
@@ -497,8 +679,12 @@ async function sendMessage(text) {
   streaming = true;
   sendBtn.disabled = true;
 
-  // Hide suggestions
+  // Hide welcome state and suggestions
+  if (welcomeState) welcomeState.style.display = 'none';
   suggestionsEl.style.display = 'none';
+
+  // Bump degen score
+  updateDegenScore(Math.floor(Math.random() * 5) + 1);
 
   // Add user message
   const userDiv = document.createElement('div');
@@ -568,10 +754,12 @@ async function sendMessage(text) {
             contentDiv.appendChild(cursor);
             scrollToBottom();
           } else if (eventType === 'tool_call') {
+            updateDegenScore(2);
             const badge = document.createElement('div');
             badge.className = 'tool-badge';
             badge.id = `tool-${data.name}-${Date.now()}`;
-            badge.innerHTML = `<span class="dot"></span>${escapeHtml(data.name)}`;
+            const emoji = TOOL_EMOJIS[data.name] || '🎲';
+            badge.innerHTML = `<span class="icon">${emoji}</span>${escapeHtml(data.name)}`;
             contentDiv.appendChild(badge);
             contentDiv.appendChild(cursor);
             scrollToBottom();
@@ -587,7 +775,7 @@ async function sendMessage(text) {
           } else if (eventType === 'error') {
             const errorDiv = document.createElement('div');
             errorDiv.className = 'error-msg';
-            errorDiv.textContent = `Error: ${data.message}`;
+            errorDiv.textContent = `💀 rekt: ${data.message}`;
             messagesEl.appendChild(errorDiv);
           }
 
@@ -598,7 +786,7 @@ async function sendMessage(text) {
   } catch (err) {
     const errorDiv = document.createElement('div');
     errorDiv.className = 'error-msg';
-    errorDiv.textContent = `Connection error: ${err.message}`;
+    errorDiv.textContent = `💀 connection rekt: ${err.message}`;
     messagesEl.appendChild(errorDiv);
   }
 
@@ -655,8 +843,14 @@ clearBtn.addEventListener('click', async () => {
   });
   sessionId = crypto.randomUUID();
   messagesEl.innerHTML = '';
+  // Rebuild welcome state
+  const ws = document.createElement('div');
+  ws.id = 'welcome-state';
+  ws.innerHTML = '<div class="big-emoji">🎲</div><div class="tagline" id="rotating-quote"></div>';
+  messagesEl.appendChild(ws);
   messagesEl.appendChild(suggestionsEl);
   suggestionsEl.style.display = 'flex';
+  showRandomQuote();
 });
 
 // Suggestion chips
