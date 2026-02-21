@@ -1,0 +1,15 @@
+{
+	"name": "@savvy-web/oracle-agent",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"improve": "bun run src/improve.ts",
+		"serve": "bun run src/server.ts",
+		"start": "bun run src/cli.ts"
+	},
+	"dependencies": {
+		"@anthropic-ai/sdk": "^0.52.0",
+		"postgres": "^3.4.5"
+	}
+}

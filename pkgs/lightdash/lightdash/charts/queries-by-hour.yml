@@ -1,0 +1,41 @@
+version: 1
+name: Queries by Hour
+slug: queries-by-hour
+spaceSlug: oracle
+tableName: query_analytics
+updatedAt: "2026-02-21T00:00:00.000Z"
+
+metricQuery:
+  exploreName: query_analytics
+  dimensions:
+    - query_analytics_query_hour
+  metrics:
+    - query_analytics_total_queries
+  filters: {}
+  sorts:
+    - fieldId: query_analytics_query_hour
+      descending: false
+  limit: 24
+  tableCalculations: []
+
+chartConfig:
+  type: cartesian
+  config:
+    layout:
+      xField: query_analytics_query_hour
+      yField:
+        - query_analytics_total_queries
+      flipAxes: false
+    eChartsConfig:
+      series:
+        - type: bar
+          encode:
+            xRef:
+              field: query_analytics_query_hour
+            yRef:
+              field: query_analytics_total_queries
+          color: "#00d4ff"
+      xAxis:
+        - name: Hour of Day
+      yAxis:
+        - name: Queries

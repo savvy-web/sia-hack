@@ -1,0 +1,47 @@
+version: 1
+name: Price Distribution
+slug: price-distribution
+spaceSlug: oracle
+tableName: market_overview
+updatedAt: "2026-02-21T00:00:00.000Z"
+
+metricQuery:
+  exploreName: market_overview
+  dimensions:
+    - market_overview_price_direction
+  metrics:
+    - market_overview_total_markets
+  filters:
+    dimensions:
+      id: "root"
+      and:
+        - id: "filter-1"
+          target:
+            fieldId: market_overview_active
+            tableName: market_overview
+          operator: equals
+          values:
+            - "true"
+  sorts:
+    - fieldId: market_overview_total_markets
+      descending: true
+  limit: 10
+  tableCalculations: []
+
+chartConfig:
+  type: pie
+  config:
+    groupFieldIds:
+      - market_overview_price_direction
+    metricId: market_overview_total_markets
+    isDonut: true
+    valueLabel: inside
+    showValue: true
+    showPercentage: true
+    showLegend: true
+    legendPosition: horizontal
+    groupColorOverrides:
+      Likely Yes: "#22c55e"
+      Likely No: "#ef4444"
+      Even odds: "#f59e0b"
+      Unknown: "#94a3b8"

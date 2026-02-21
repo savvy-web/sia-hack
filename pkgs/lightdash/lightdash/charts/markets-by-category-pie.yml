@@ -1,0 +1,41 @@
+version: 1
+name: Markets by Category
+slug: markets-by-category-pie
+spaceSlug: oracle
+tableName: category_summary
+updatedAt: "2026-02-21T00:00:00.000Z"
+
+metricQuery:
+  exploreName: category_summary
+  dimensions:
+    - category_summary_category
+  metrics:
+    - category_summary_sum_market_count
+  filters: {}
+  sorts:
+    - fieldId: category_summary_sum_market_count
+      descending: true
+  limit: 10
+  tableCalculations: []
+
+chartConfig:
+  type: pie
+  config:
+    groupFieldIds:
+      - category_summary_category
+    metricId: category_summary_sum_market_count
+    isDonut: true
+    valueLabel: inside
+    showValue: false
+    showPercentage: true
+    showLegend: true
+    legendPosition: vertical
+    groupColorOverrides:
+      Sports: "#3b82f6"
+      Politics: "#ef4444"
+      Crypto: "#f59e0b"
+      Games: "#8b5cf6"
+      Soccer: "#22c55e"
+      Basketball: "#f97316"
+      Elections: "#dc2626"
+      Uncategorized: "#94a3b8"

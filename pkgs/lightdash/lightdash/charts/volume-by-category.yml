@@ -1,0 +1,41 @@
+version: 1
+name: Volume by Category
+slug: volume-by-category
+spaceSlug: oracle
+tableName: category_summary
+updatedAt: "2026-02-21T00:00:00.000Z"
+
+metricQuery:
+  exploreName: category_summary
+  dimensions:
+    - category_summary_category
+    - category_summary_total_volume
+  metrics: []
+  filters: {}
+  sorts:
+    - fieldId: category_summary_total_volume
+      descending: true
+  limit: 15
+  tableCalculations: []
+
+chartConfig:
+  type: cartesian
+  config:
+    layout:
+      xField: category_summary_category
+      yField:
+        - category_summary_total_volume
+      flipAxes: true
+    eChartsConfig:
+      xAxis:
+        - name: "Total Volume ($)"
+      yAxis:
+        - name: ""
+      series:
+        - type: bar
+          encode:
+            xRef:
+              field: category_summary_category
+            yRef:
+              field: category_summary_total_volume
+          color: "#3b82f6"

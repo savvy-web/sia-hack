@@ -1,0 +1,23 @@
+version: 1
+name: Avg Latency
+slug: queries-avg-latency-kpi
+spaceSlug: oracle
+tableName: query_analytics
+updatedAt: "2026-02-21T00:00:00.000Z"
+
+metricQuery:
+  exploreName: query_analytics
+  dimensions: []
+  metrics:
+    - query_analytics_avg_latency
+  filters: {}
+  sorts: []
+  limit: 1
+  tableCalculations: []
+
+chartConfig:
+  type: big_number
+  config:
+    selectedField: query_analytics_avg_latency
+    label: Avg Latency (ms)
+    showBigNumberLabel: true

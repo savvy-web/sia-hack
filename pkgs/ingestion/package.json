@@ -1,0 +1,15 @@
+{
+	"name": "@savvy-web/oracle-ingestion",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"ingest": "bun run src/ingest.ts",
+		"snapshot": "bun run src/snapshot.ts"
+	},
+	"dependencies": {
+		"@savvy-web/oracle-shared": "workspace:*",
+		"postgres": "^3.4.5",
+		"zod": "^3.24"
+	}
+}

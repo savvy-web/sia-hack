@@ -29,6 +29,9 @@ pnpm-release.json
 !.env.example
 !.env.*.example
 
+# Local run scripts (contain env var references)
+run-local.sh
+
 # Claude AI files
 .claude/settings.local.json
 .claude/plans/

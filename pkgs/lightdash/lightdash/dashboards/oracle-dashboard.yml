@@ -1,0 +1,119 @@
+version: 1
+name: "Oracle: Prediction Market Intelligence"
+slug: oracle-dashboard
+spaceSlug: oracle
+description: "Real-time intelligence dashboard for Polymarket prediction markets"
+
+tiles:
+  # Row 0: KPI strip
+  - type: saved_chart
+    x: 0
+    y: 0
+    w: 9
+    h: 3
+    properties:
+      chartSlug: total-markets-kpi
+      title: Total Markets
+
+  - type: saved_chart
+    x: 9
+    y: 0
+    w: 9
+    h: 3
+    properties:
+      chartSlug: total-volume-kpi
+      title: Total Volume
+
+  - type: saved_chart
+    x: 18
+    y: 0
+    w: 9
+    h: 3
+    properties:
+      chartSlug: total-liquidity-kpi
+      title: Total Liquidity
+
+  - type: saved_chart
+    x: 27
+    y: 0
+    w: 9
+    h: 3
+    properties:
+      chartSlug: avg-spread-kpi
+      title: Avg Spread
+
+  # Row 1: Category charts
+  - type: saved_chart
+    x: 0
+    y: 3
+    w: 18
+    h: 8
+    properties:
+      chartSlug: volume-by-category
+      title: Volume by Category
+
+  - type: saved_chart
+    x: 18
+    y: 3
+    w: 18
+    h: 8
+    properties:
+      chartSlug: markets-by-category-pie
+      title: Markets by Category
+
+  # Row 2: Price distribution + About
+  - type: saved_chart
+    x: 0
+    y: 11
+    w: 18
+    h: 8
+    properties:
+      chartSlug: price-distribution
+      title: Market Direction Distribution
+
+  - type: markdown
+    x: 18
+    y: 11
+    w: 18
+    h: 8
+    properties:
+      title: "About Oracle"
+      content: |
+        ## Oracle — Prediction Market Intelligence
+
+        Real-time analytics across **Polymarket prediction markets**.
+
+        **Data Pipeline:**
+        - Events & markets fetched from Polymarket Gamma API
+        - Live prices from the CLOB API
+        - Stored in Supabase Postgres
+        - Modeled and visualized with Lightdash
+
+        **Key Metrics:**
+        - **Price** — market probability (0 = No, 1 = Yes)
+        - **Volume** — total dollars traded
+        - **Liquidity** — available depth in order book
+        - **Spread** — gap between best bid and ask
+
+  # Row 3: Heading + Top markets table
+  - type: heading
+    x: 0
+    y: 19
+    w: 36
+    h: 1
+    properties:
+      text: "Highest Volume Active Markets"
+
+  - type: saved_chart
+    x: 0
+    y: 20
+    w: 36
+    h: 14
+    properties:
+      chartSlug: top-markets-table
+      title: Top Markets by Volume
+
+tabs: []
+
+filters:
+  dimensions: []

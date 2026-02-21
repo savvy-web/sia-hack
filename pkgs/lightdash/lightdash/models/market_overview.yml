@@ -1,0 +1,222 @@
+type: model
+name: market_overview
+label: Market Overview
+description: All prediction markets with event context, category, pricing, and volume data
+sql_from: public.v_market_overview
+primary_key: market_id
+
+dimensions:
+  - name: market_id
+    type: string
+    sql: ${TABLE}.market_id
+    label: Market ID
+    hidden: true
+
+  - name: question
+    type: string
+    sql: ${TABLE}.question
+    label: Question
+    description: The market question being predicted
+    urls:
+      - label: View on Polymarket
+        url: "https://polymarket.com/event/${row.event_slug}"
+
+  - name: market_slug
+    type: string
+    sql: ${TABLE}.market_slug
+    label: Market Slug
+    hidden: true
+
+  - name: event_id
+    type: string
+    sql: ${TABLE}.event_id
+    label: Event ID
+    hidden: true
+
+  - name: event_title
+    type: string
+    sql: ${TABLE}.event_title
+    label: Event
+    description: Parent event this market belongs to
+
+  - name: event_slug
+    type: string
+    sql: ${TABLE}.event_slug
+    label: Event Slug
+    hidden: true
+
+  - name: primary_category
+    type: string
+    sql: ${TABLE}.primary_category
+    label: Category
+    description: Primary topic category (Sports, Politics, Crypto, etc.)
+    colors:
+      Sports: "#3b82f6"
+      Politics: "#ef4444"
+      Crypto: "#f59e0b"
+      Games: "#8b5cf6"
+      Soccer: "#22c55e"
+      Basketball: "#f97316"
+      Elections: "#dc2626"
+      Bitcoin: "#f7931a"
+      Ethereum: "#627eea"
+
+  - name: active
+    type: boolean
+    sql: ${TABLE}.active
+    label: Active
+
+  - name: closed
+    type: boolean
+    sql: ${TABLE}.closed
+    label: Closed
+
+  - name: last_price
+    type: number
+    sql: ${TABLE}.last_price
+    label: Last Price
+    description: Most recent trade price (0 = No, 1 = Yes)
+    round: 3
+
+  - name: best_bid
+    type: number
+    sql: ${TABLE}.best_bid
+    label: Best Bid
+    round: 3
+
+  - name: best_ask
+    type: number
+    sql: ${TABLE}.best_ask
+    label: Best Ask
+    round: 3
+
+  - name: spread
+    type: number
+    sql: ${TABLE}.spread
+    label: Spread
+    description: Difference between best ask and best bid
+    round: 4
+
+  - name: price_direction
+    type: string
+    sql: ${TABLE}.price_direction
+    label: Price Direction
+    description: Whether the market leans Yes, No, or Even
+    colors:
+      Likely Yes: "#22c55e"
+      Likely No: "#ef4444"
+      Even odds: "#f59e0b"
+      Unknown: "#94a3b8"
+
+  - name: outcome_yes
+    type: string
+    sql: ${TABLE}.outcome_yes
+    label: Yes Outcome
+
+  - name: outcome_no
+    type: string
+    sql: ${TABLE}.outcome_no
+    label: No Outcome
+
+  - name: volume
+    type: number
+    sql: ${TABLE}.volume
+    label: Market Volume ($)
+    format: usd
+    compact: thousands
+
+  - name: liquidity
+    type: number
+    sql: ${TABLE}.liquidity
+    label: Market Liquidity ($)
+    format: usd
+    compact: thousands
+
+  - name: event_volume
+    type: number
+    sql: ${TABLE}.event_volume
+    label: Event Volume ($)
+    format: usd
+    compact: thousands
+
+  - name: market_created_at
+    type: timestamp
+    sql: ${TABLE}.market_created_at
+    label: Market Created
+    time_intervals: [DAY, WEEK, MONTH, YEAR]
+
+  - name: event_start_date
+    type: timestamp
+    sql: ${TABLE}.event_start_date
+    label: Event Start Date
+    time_intervals: [DAY, WEEK, MONTH, YEAR]
+
+  - name: event_end_date
+    type: timestamp
+    sql: ${TABLE}.event_end_date
+    label: Event End Date
+    time_intervals: [DAY, WEEK, MONTH, YEAR]
+
+metrics:
+  total_markets:
+    type: count
+    sql: ${TABLE}.market_id
+    label: Total Markets
+
+  active_markets:
+    type: count
+    sql: ${TABLE}.market_id
+    label: Active Markets
+    filters:
+      - active: "true"
+
+  total_volume:
+    type: sum
+    sql: ${TABLE}.volume
+    label: Total Volume
+    format: usd
+    compact: millions
+
+  total_liquidity:
+    type: sum
+    sql: ${TABLE}.liquidity
+    label: Total Liquidity
+    format: usd
+    compact: millions
+
+  avg_volume:
+    type: average
+    sql: ${TABLE}.volume
+    label: Avg Volume per Market
+    format: usd
+    round: 0
+
+  avg_price:
+    type: average
+    sql: ${TABLE}.last_price
+    label: Avg Last Price
+    description: Average market probability
+    round: 3
+
+  avg_spread:
+    type: average
+    sql: ${TABLE}.spread
+    label: Avg Spread
+    round: 4
+
+  max_volume:
+    type: max
+    sql: ${TABLE}.volume
+    label: Highest Volume Market
+    format: usd
+    compact: thousands
+
+  unique_events:
+    type: count_distinct
+    sql: ${TABLE}.event_id
+    label: Unique Events
+
+  unique_categories:
+    type: count_distinct
+    sql: ${TABLE}.primary_category
+    label: Unique Categories

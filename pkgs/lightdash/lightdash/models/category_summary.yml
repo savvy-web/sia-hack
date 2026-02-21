@@ -1,0 +1,88 @@
+type: model
+name: category_summary
+label: Category Summary
+description: Aggregated market statistics by topic category
+sql_from: public.v_category_summary
+primary_key: category
+
+dimensions:
+  - name: category
+    type: string
+    sql: ${TABLE}.category
+    label: Category
+    colors:
+      Sports: "#3b82f6"
+      Politics: "#ef4444"
+      Crypto: "#f59e0b"
+      Games: "#8b5cf6"
+      Soccer: "#22c55e"
+      Basketball: "#f97316"
+      Elections: "#dc2626"
+      Uncategorized: "#94a3b8"
+
+  - name: market_count
+    type: number
+    sql: ${TABLE}.market_count
+    label: Total Markets
+
+  - name: active_market_count
+    type: number
+    sql: ${TABLE}.active_market_count
+    label: Active Markets
+
+  - name: total_volume
+    type: number
+    sql: ${TABLE}.total_volume
+    label: Total Volume ($)
+    format: usd
+    compact: millions
+
+  - name: avg_volume
+    type: number
+    sql: ${TABLE}.avg_volume
+    label: Avg Volume per Market ($)
+    format: usd
+    compact: thousands
+
+  - name: total_liquidity
+    type: number
+    sql: ${TABLE}.total_liquidity
+    label: Total Liquidity ($)
+    format: usd
+    compact: millions
+
+  - name: avg_price
+    type: number
+    sql: ${TABLE}.avg_price
+    label: Avg Market Price
+    round: 3
+
+metrics:
+  sum_market_count:
+    type: sum
+    sql: ${TABLE}.market_count
+    label: Total Markets
+
+  sum_active_markets:
+    type: sum
+    sql: ${TABLE}.active_market_count
+    label: Total Active Markets
+
+  sum_total_volume:
+    type: sum
+    sql: ${TABLE}.total_volume
+    label: Total Volume
+    format: usd
+    compact: millions
+
+  sum_total_liquidity:
+    type: sum
+    sql: ${TABLE}.total_liquidity
+    label: Total Liquidity
+    format: usd
+    compact: millions
+
+  category_count:
+    type: count
+    sql: ${TABLE}.category
+    label: Number of Categories

@@ -1,0 +1,29 @@
+type: model
+name: query_tool_usage
+label: Query Tool Usage
+description: Tool usage aggregated per day from user queries
+sql_from: public.v_query_tool_usage
+primary_key: tool_name
+
+dimensions:
+  - name: tool_name
+    type: string
+    sql: ${TABLE}.tool_name
+    label: Tool Name
+
+  - name: usage_count
+    type: number
+    sql: ${TABLE}.usage_count
+    label: Usage Count
+
+  - name: usage_date
+    type: date
+    sql: ${TABLE}.usage_date
+    label: Usage Date
+    time_intervals: [DAY, WEEK, MONTH]
+
+metrics:
+  total_tool_calls:
+    type: sum
+    sql: ${TABLE}.usage_count
+    label: Total Tool Calls

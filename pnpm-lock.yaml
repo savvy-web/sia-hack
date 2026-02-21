@@ -48,14 +48,14 @@ importers:
         specifier: 'catalog:'
         version: 0.1.0(@types/node@25.3.0)(@typescript/native-preview@7.0.0-dev.20260220.1)(@vitest/coverage-v8@4.0.18(vitest@4.0.18(@types/node@25.3.0)(jiti@2.6.1)(yaml@2.8.2)))(typescript@5.9.3)(vitest@4.0.18(@types/node@25.3.0)(jiti@2.6.1)(yaml@2.8.2))
 
-  pkgs/example-module:
-    devDependencies:
-      '@savvy-web/rslib-builder':
-        specifier: ^0.14.5
-        version: 0.14.5(@microsoft/api-extractor@7.56.3(@types/node@25.3.0))(@pnpm/logger@1001.0.1)(@rslib/core@0.19.6(@microsoft/api-extractor@7.56.3(@types/node@25.3.0))(@typescript/native-preview@7.0.0-dev.20260220.1)(typescript@5.9.3))(@types/node@25.3.0)(@typescript/native-preview@7.0.0-dev.20260220.1)(jiti@2.6.1)(typescript@5.9.3)
-      vitest:
-        specifier: catalog:silk
-        version: 4.0.18(@types/node@25.3.0)(jiti@2.6.1)(yaml@2.8.2)
+  pkgs/agent:
+    dependencies:
+      '@anthropic-ai/sdk':
+        specifier: ^0.52.0
+        version: 0.52.0
+      postgres:
+        specifier: ^3.4.5
+        version: 3.4.8
 
   pkgs/example-module-2:
     devDependencies:
@@ -66,13 +66,35 @@ importers:
         specifier: catalog:silk
         version: 4.0.18(@types/node@25.3.0)(jiti@2.6.1)(yaml@2.8.2)
 
+  pkgs/ingestion:
+    dependencies:
+      '@savvy-web/oracle-shared':
+        specifier: workspace:*
+        version: link:../shared
+      postgres:
+        specifier: ^3.4.5
+        version: 3.4.8
+      zod:
+        specifier: ^3.24
+        version: 3.25.76
+
   pkgs/lightdash:
     devDependencies:
       '@savvy-web/rslib-builder':
         specifier: ^0.14.5
         version: 0.14.5(@microsoft/api-extractor@7.56.3(@types/node@25.3.0))(@pnpm/logger@1001.0.1)(@rslib/core@0.19.6(@microsoft/api-extractor@7.56.3(@types/node@25.3.0))(@typescript/native-preview@7.0.0-dev.20260220.1)(typescript@5.9.3))(@types/node@25.3.0)(@typescript/native-preview@7.0.0-dev.20260220.1)(jiti@2.6.1)(typescript@5.9.3)
 
+  pkgs/shared:
+    dependencies:
+      zod:
+        specifier: ^3.24
+        version: 3.25.76
+
 packages:
+
+  '@anthropic-ai/sdk@0.52.0':
+    resolution: {integrity: sha512-d4c+fg+xy9e46c8+YnrrgIQR45CZlAi7PwdzIfDXDM6ACxEZli1/fxhURsq30ZpMZy6LvSkr41jGq5aF5TD7rQ==}
+    hasBin: true
 
   '@ast-grep/napi-darwin-arm64@0.37.0':
     resolution: {integrity: sha512-QAiIiaAbLvMEg/yBbyKn+p1gX2/FuaC0SMf7D7capm/oG4xGMzdeaQIcSosF4TCxxV+hIH4Bz9e4/u7w6Bnk3Q==}
@@ -2867,6 +2889,10 @@ packages:
     resolution: {integrity: sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==}
     engines: {node: ^10 || ^12 || >=14}
 
+  postgres@3.4.8:
+    resolution: {integrity: sha512-d+JFcLM17njZaOLkv6SCev7uoLaBtfK86vMUXhW1Z4glPWh4jozno9APvW/XKFJ3CCxVoC7OL38BqRydtu5nGg==}
+    engines: {node: '>=12'}
+
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
@@ -3478,6 +3504,9 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
+  zod@3.25.76:
+    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
+
   zod@4.3.6:
     resolution: {integrity: sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg==}
 
@@ -3485,6 +3514,8 @@ packages:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
 
 snapshots:
+
+  '@anthropic-ai/sdk@0.52.0': {}
 
   '@ast-grep/napi-darwin-arm64@0.37.0':
     optional: true
@@ -6583,6 +6614,8 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
+  postgres@3.4.8: {}
+
   prelude-ls@1.2.1: {}
 
   prettier@2.8.8: {}
@@ -7192,6 +7225,8 @@ snapshots:
       yargs-parser: 21.1.1
 
   yocto-queue@0.1.0: {}
+
+  zod@3.25.76: {}
 
   zod@4.3.6: {}
 

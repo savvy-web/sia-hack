@@ -15,10 +15,13 @@
 	"include": ["lib/**/*.ts", "types/**/*.d.ts", "*.ts"],
 	"references": [
 		{
-			"path": "./pkgs/example-module"
+			"path": "./pkgs/example-module-2"
 		},
 		{
-			"path": "./pkgs/example-module-2"
+			"path": "./pkgs/shared"
+		},
+		{
+			"path": "./pkgs/ingestion"
 		}
 	]
 }

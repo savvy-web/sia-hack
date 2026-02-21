@@ -1,0 +1,24 @@
+node_modules
+.git
+.env
+.env.*
+*.md
+!pkgs/*/package.json
+
+# Packages not needed in the image
+pkgs/lightdash
+pkgs/example-module-2
+lib/
+
+# Build artifacts
+dist
+coverage
+.turbo
+.claude
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Deploy scripts (not needed inside container)
+deploy/

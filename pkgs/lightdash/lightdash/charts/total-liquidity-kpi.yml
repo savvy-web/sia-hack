@@ -1,0 +1,24 @@
+version: 1
+name: Total Liquidity
+slug: total-liquidity-kpi
+spaceSlug: oracle
+tableName: market_overview
+updatedAt: "2026-02-21T00:00:00.000Z"
+
+metricQuery:
+  exploreName: market_overview
+  dimensions: []
+  metrics:
+    - market_overview_total_liquidity
+  filters: {}
+  sorts: []
+  limit: 1
+  tableCalculations: []
+
+chartConfig:
+  type: big_number
+  config:
+    selectedField: market_overview_total_liquidity
+    label: Total Liquidity
+    style: M
+    showBigNumberLabel: true

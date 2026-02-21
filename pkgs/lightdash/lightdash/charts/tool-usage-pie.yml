@@ -1,0 +1,38 @@
+version: 1
+name: Tool Usage Distribution
+slug: tool-usage-pie
+spaceSlug: oracle
+tableName: query_tool_usage
+updatedAt: "2026-02-21T00:00:00.000Z"
+
+metricQuery:
+  exploreName: query_tool_usage
+  dimensions:
+    - query_tool_usage_tool_name
+  metrics:
+    - query_tool_usage_total_tool_calls
+  filters: {}
+  sorts:
+    - fieldId: query_tool_usage_total_tool_calls
+      descending: true
+  limit: 10
+  tableCalculations: []
+
+chartConfig:
+  type: pie
+  config:
+    groupFieldIds:
+      - query_tool_usage_tool_name
+    metricId: query_tool_usage_total_tool_calls
+    isDonut: true
+    valueLabel: inside
+    showValue: false
+    showPercentage: true
+    showLegend: true
+    legendPosition: vertical
+    groupColorOverrides:
+      query_database: "#3b82f6"
+      get_live_price: "#22c55e"
+      get_order_book: "#f59e0b"
+      fetch_gamma_market: "#8b5cf6"
+      get_improvement_proposals: "#00d4ff"

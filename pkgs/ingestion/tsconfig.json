@@ -1,0 +1,9 @@
+{
+	"$schema": "https://json-schema.store/tsconfig.json",
+	"compilerOptions": {
+		"outDir": "dist",
+		"rootDir": "src"
+	},
+	"extends": "../../tsconfig.json",
+	"include": ["src/**/*.ts"]
+}

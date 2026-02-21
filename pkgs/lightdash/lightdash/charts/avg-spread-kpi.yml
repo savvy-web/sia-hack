@@ -1,0 +1,33 @@
+version: 1
+name: Avg Spread
+slug: avg-spread-kpi
+spaceSlug: oracle
+tableName: market_overview
+updatedAt: "2026-02-21T00:00:00.000Z"
+
+metricQuery:
+  exploreName: market_overview
+  dimensions: []
+  metrics:
+    - market_overview_avg_spread
+  filters:
+    dimensions:
+      id: "root"
+      and:
+        - id: "filter-1"
+          target:
+            fieldId: market_overview_active
+            tableName: market_overview
+          operator: equals
+          values:
+            - "true"
+  sorts: []
+  limit: 1
+  tableCalculations: []
+
+chartConfig:
+  type: big_number
+  config:
+    selectedField: market_overview_avg_spread
+    label: Avg Spread
+    showBigNumberLabel: true

@@ -1,0 +1,120 @@
+type: model
+name: price_snapshots
+label: Price Snapshots
+description: Time-series price data for prediction market tokens
+sql_from: public.v_price_snapshots
+primary_key: snapshot_id
+
+dimensions:
+  - name: snapshot_id
+    type: number
+    sql: ${TABLE}.snapshot_id
+    label: Snapshot ID
+    hidden: true
+
+  - name: market_id
+    type: string
+    sql: ${TABLE}.market_id
+    label: Market ID
+    hidden: true
+
+  - name: token_id
+    type: string
+    sql: ${TABLE}.token_id
+    label: Token ID
+    hidden: true
+
+  - name: question
+    type: string
+    sql: ${TABLE}.question
+    label: Market Question
+
+  - name: price
+    type: number
+    sql: ${TABLE}.price
+    label: Price
+    description: Token price (0-1 probability)
+    round: 4
+
+  - name: midpoint
+    type: number
+    sql: ${TABLE}.midpoint
+    label: Midpoint
+    round: 4
+
+  - name: spread
+    type: number
+    sql: ${TABLE}.spread
+    label: Spread
+    round: 4
+
+  - name: bid_depth
+    type: number
+    sql: ${TABLE}.bid_depth
+    label: Bid Depth ($)
+    format: usd
+    compact: thousands
+
+  - name: ask_depth
+    type: number
+    sql: ${TABLE}.ask_depth
+    label: Ask Depth ($)
+    format: usd
+    compact: thousands
+
+  - name: snapshot_at
+    type: timestamp
+    sql: ${TABLE}.snapshot_at
+    label: Snapshot Time
+    time_intervals: [RAW, HOUR, DAY, WEEK, MONTH]
+
+metrics:
+  avg_price:
+    type: average
+    sql: ${TABLE}.price
+    label: Avg Price
+    round: 4
+
+  avg_spread:
+    type: average
+    sql: ${TABLE}.spread
+    label: Avg Spread
+    round: 4
+
+  avg_bid_depth:
+    type: average
+    sql: ${TABLE}.bid_depth
+    label: Avg Bid Depth
+    format: usd
+    round: 0
+
+  avg_ask_depth:
+    type: average
+    sql: ${TABLE}.ask_depth
+    label: Avg Ask Depth
+    format: usd
+    round: 0
+
+  total_snapshots:
+    type: count
+    sql: ${TABLE}.snapshot_id
+    label: Total Snapshots
+
+  min_price:
+    type: min
+    sql: ${TABLE}.price
+    label: Min Price
+    round: 4
+
+  max_price:
+    type: max
+    sql: ${TABLE}.price
+    label: Max Price
+    round: 4
+
+  price_range:
+    type: number
+    sql: MAX(${TABLE}.price) - MIN(${TABLE}.price)
+    label: Price Range
+    description: Difference between max and min price (volatility indicator)
+    round: 4

@@ -1,0 +1,47 @@
+version: 1
+name: Recent Queries
+slug: recent-queries-table
+spaceSlug: oracle
+tableName: query_analytics
+updatedAt: "2026-02-21T00:00:00.000Z"
+
+metricQuery:
+  exploreName: query_analytics
+  dimensions:
+    - query_analytics_created_at
+    - query_analytics_user_message
+    - query_analytics_tools_used_list
+    - query_analytics_tool_count
+    - query_analytics_latency_ms
+    - query_analytics_had_error
+    - query_analytics_session_id
+  metrics: []
+  filters: {}
+  sorts:
+    - fieldId: query_analytics_created_at
+      descending: true
+  limit: 50
+  tableCalculations: []
+
+chartConfig:
+  type: table
+  config:
+    showColumnCalculation: false
+    hideRowNumbers: false
+    showResultsTotal: true
+    columns:
+      query_analytics_created_at:
+        name: Time
+      query_analytics_user_message:
+        name: User Message
+        frozen: true
+      query_analytics_tools_used_list:
+        name: Tools Used
+      query_analytics_tool_count:
+        name: Tool Count
+      query_analytics_latency_ms:
+        name: Latency (ms)
+      query_analytics_had_error:
+        name: Error
+      query_analytics_session_id:
+        name: Session

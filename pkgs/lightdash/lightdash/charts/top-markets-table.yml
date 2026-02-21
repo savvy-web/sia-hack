@@ -1,0 +1,66 @@
+version: 1
+name: Top Markets by Volume
+slug: top-markets-table
+spaceSlug: oracle
+tableName: market_overview
+updatedAt: "2026-02-21T00:00:00.000Z"
+
+metricQuery:
+  exploreName: market_overview
+  dimensions:
+    - market_overview_question
+    - market_overview_primary_category
+    - market_overview_last_price
+    - market_overview_volume
+    - market_overview_liquidity
+    - market_overview_spread
+    - market_overview_price_direction
+  metrics: []
+  filters:
+    dimensions:
+      id: "root"
+      and:
+        - id: "filter-1"
+          target:
+            fieldId: market_overview_active
+            tableName: market_overview
+          operator: equals
+          values:
+            - "true"
+        - id: "filter-2"
+          target:
+            fieldId: market_overview_volume
+            tableName: market_overview
+          operator: greaterThan
+          values:
+            - 1000
+  sorts:
+    - fieldId: market_overview_volume
+      descending: true
+  limit: 50
+  tableCalculations: []
+
+chartConfig:
+  type: table
+  config:
+    showColumnCalculation: false
+    hideRowNumbers: false
+    showResultsTotal: true
+    columns:
+      market_overview_question:
+        name: Market Question
+        frozen: true
+      market_overview_primary_category:
+        name: Category
+      market_overview_last_price:
+        name: Price (Prob)
+      market_overview_volume:
+        name: Volume ($)
+        displayStyle: bar
+        color: "#3b82f6"
+      market_overview_liquidity:
+        name: Liquidity ($)
+      market_overview_spread:
+        name: Spread
+      market_overview_price_direction:
+        name: Direction

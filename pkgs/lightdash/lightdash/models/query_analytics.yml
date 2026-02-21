@@ -1,0 +1,98 @@
+type: model
+name: query_analytics
+label: Query Analytics
+description: User query logs with tools used, latency, and session data
+sql_from: public.v_query_analytics
+primary_key: id
+
+dimensions:
+  - name: id
+    type: number
+    sql: ${TABLE}.id
+    label: Query ID
+    hidden: true
+
+  - name: session_id
+    type: string
+    sql: ${TABLE}.session_id
+    label: Session ID
+
+  - name: user_message
+    type: string
+    sql: ${TABLE}.user_message
+    label: User Message
+
+  - name: tools_used_list
+    type: string
+    sql: ${TABLE}.tools_used_list
+    label: Tools Used
+
+  - name: tool_count
+    type: number
+    sql: ${TABLE}.tool_count
+    label: Tool Count
+
+  - name: latency_ms
+    type: number
+    sql: ${TABLE}.latency_ms
+    label: Latency (ms)
+
+  - name: had_error
+    type: boolean
+    sql: ${TABLE}.had_error
+    label: Had Error
+
+  - name: query_hour
+    type: number
+    sql: ${TABLE}.query_hour
+    label: Query Hour
+
+  - name: query_date
+    type: date
+    sql: ${TABLE}.query_date
+    label: Query Date
+    time_intervals: [DAY, WEEK, MONTH]
+
+  - name: message_length_bucket
+    type: string
+    sql: ${TABLE}.message_length_bucket
+    label: Message Length
+
+  - name: created_at
+    type: timestamp
+    sql: ${TABLE}.created_at
+    label: Created At
+    time_intervals: [HOUR, DAY, WEEK, MONTH]
+
+metrics:
+  total_queries:
+    type: count
+    sql: ${TABLE}.id
+    label: Total Queries
+
+  unique_sessions:
+    type: count_distinct
+    sql: ${TABLE}.session_id
+    label: Unique Sessions
+
+  avg_latency:
+    type: average
+    sql: ${TABLE}.latency_ms
+    label: Avg Latency (ms)
+    round: 0
+
+  avg_tools:
+    type: average
+    sql: ${TABLE}.tool_count
+    label: Avg Tools per Query
+    round: 1
+
+  error_count:
+    type: sum
+    sql: CASE WHEN ${TABLE}.had_error THEN 1 ELSE 0 END
+    label: Error Count
+
+  max_latency:
+    type: max
+    sql: ${TABLE}.latency_ms
+    label: Max Latency (ms)

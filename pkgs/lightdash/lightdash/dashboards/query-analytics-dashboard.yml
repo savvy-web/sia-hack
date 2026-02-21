@@ -1,0 +1,76 @@
+version: 1
+name: "Oracle: Query Analytics"
+slug: query-analytics-dashboard
+spaceSlug: oracle
+description: "User query patterns, tool usage, and performance metrics for Oracle"
+
+tiles:
+  # Row 0: KPI strip
+  - type: saved_chart
+    x: 0
+    y: 0
+    w: 12
+    h: 3
+    properties:
+      chartSlug: queries-total-kpi
+      title: Total Queries
+
+  - type: saved_chart
+    x: 12
+    y: 0
+    w: 12
+    h: 3
+    properties:
+      chartSlug: queries-sessions-kpi
+      title: Unique Sessions
+
+  - type: saved_chart
+    x: 24
+    y: 0
+    w: 12
+    h: 3
+    properties:
+      chartSlug: queries-avg-latency-kpi
+      title: Avg Latency (ms)
+
+  # Row 1: Charts
+  - type: saved_chart
+    x: 0
+    y: 3
+    w: 20
+    h: 8
+    properties:
+      chartSlug: queries-by-hour
+      title: Queries by Hour of Day
+
+  - type: saved_chart
+    x: 20
+    y: 3
+    w: 16
+    h: 8
+    properties:
+      chartSlug: tool-usage-pie
+      title: Tool Usage Distribution
+
+  # Row 2: Recent queries table
+  - type: heading
+    x: 0
+    y: 11
+    w: 36
+    h: 1
+    properties:
+      text: "Recent User Queries"
+
+  - type: saved_chart
+    x: 0
+    y: 12
+    w: 36
+    h: 14
+    properties:
+      chartSlug: recent-queries-table
+      title: Recent Queries
+
+tabs: []
+
+filters:
+  dimensions: []
