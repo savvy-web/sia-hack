@@ -87,6 +87,51 @@ Only SELECT queries allowed. Results capped at 50 rows.`,
 		},
 	},
 	{
+		name: "analyze_order_flow",
+		description: `Analyze order book flow imbalance for a Polymarket token to detect potential uninformed ("dumb money") vs informed ("smart money") positioning.
+
+Returns:
+- bid_ask_imbalance: ratio of bid depth to ask depth (>1 = more buying pressure, <1 = more selling pressure)
+- thin_side: which side has less depth ("bid" or "ask") — thin side is where exits are harder
+- top_heavy_bids/asks: whether large orders cluster near the top (informed) or are spread thin (retail)
+- concentration_ratio: what % of total depth is in the top 3 orders (high = whale-dominated)
+- flow_signal: a plain-English summary of the flow dynamics`,
+		input_schema: {
+			type: "object" as const,
+			properties: {
+				token_id: {
+					type: "string",
+					description: "The CLOB token ID to analyze order flow for",
+				},
+			},
+			required: ["token_id"],
+		},
+	},
+	{
+		name: "detect_mispricing",
+		description: `Compare implied probabilities across markets within the same event to detect potential mispricings. Finds markets where probabilities don't add up correctly or where one market's price diverges from related markets.
+
+Can also compare a single market's database price vs live CLOB price to find stale/divergent pricing.
+
+Returns: list of discrepancies with magnitude and direction.`,
+		input_schema: {
+			type: "object" as const,
+			properties: {
+				event_id: {
+					type: "string",
+					description:
+						"The event ID to analyze. All markets under this event will be compared. Either event_id or market_id is required.",
+				},
+				market_id: {
+					type: "string",
+					description:
+						"A single market ID to compare its DB price vs live CLOB price. Either event_id or market_id is required.",
+				},
+			},
+			required: [],
+		},
+	},
+	{
 		name: "get_improvement_proposals",
 		description:
 			"Get self-improvement proposals that have been generated from analyzing user query patterns. Returns proposals classified by difficulty (easy/medium/hard) and category (tool/prompt/ux/data/performance). Use this when asked about how Oracle can be improved or what improvements have been suggested.",
@@ -121,6 +166,10 @@ export async function executeTool(name: string, input: Record<string, unknown>):
 			return await getOrderBook(input.token_id as string);
 		case "fetch_gamma_market":
 			return await fetchGammaMarket(input.market_id as string);
+		case "analyze_order_flow":
+			return await analyzeOrderFlow(input.token_id as string);
+		case "detect_mispricing":
+			return await detectMispricing(input.event_id as string | undefined, input.market_id as string | undefined);
 		case "get_improvement_proposals":
 			return await getImprovementProposals(input.status as string | undefined, input.difficulty as string | undefined);
 		default:
@@ -241,6 +290,142 @@ async function getImprovementProposals(status?: string, difficulty?: string): Pr
 		return JSON.stringify({
 			error: `Failed to fetch proposals: ${(err as Error).message}`,
 		});
+	}
+}
+
+async function analyzeOrderFlow(tokenId: string): Promise<string> {
+	try {
+		const book = await fetchJson<{
+			bids: Array<{ price: string; size: string }>;
+			asks: Array<{ price: string; size: string }>;
+		}>(`${CLOB_BASE}/book?token_id=${tokenId}`);
+
+		const bids = book.bids || [];
+		const asks = book.asks || [];
+
+		const bidDepth = bids.reduce((sum, b) => sum + Number(b.size), 0);
+		const askDepth = asks.reduce((sum, a) => sum + Number(a.size), 0);
+		const totalDepth = bidDepth + askDepth;
+
+		if (totalDepth === 0) {
+			return JSON.stringify({ error: "Empty order book — no liquidity to analyze." });
+		}
+
+		const imbalance = askDepth > 0 ? Math.round((bidDepth / askDepth) * 100) / 100 : bidDepth > 0 ? 999 : 1;
+		const thinSide = bidDepth < askDepth ? "bid" : "ask";
+
+		// Concentration: what % of depth is in top 3 orders on each side
+		const top3Bids = bids.slice(0, 3).reduce((s, b) => s + Number(b.size), 0);
+		const top3Asks = asks.slice(0, 3).reduce((s, a) => s + Number(a.size), 0);
+		const bidConcentration = bidDepth > 0 ? Math.round((top3Bids / bidDepth) * 100) : 0;
+		const askConcentration = askDepth > 0 ? Math.round((top3Asks / askDepth) * 100) : 0;
+
+		// Build flow signal
+		let signal = "";
+		if (imbalance > 2) {
+			signal = `Strong buying pressure (${imbalance}x more bid depth). `;
+		} else if (imbalance < 0.5) {
+			signal = `Strong selling pressure (${Math.round((1 / imbalance) * 100) / 100}x more ask depth). `;
+		} else {
+			signal = "Balanced order flow. ";
+		}
+
+		if (bidConcentration > 70 || askConcentration > 70) {
+			const side = bidConcentration > askConcentration ? "bid" : "ask";
+			signal += `Top 3 ${side} orders hold ${side === "bid" ? bidConcentration : askConcentration}% of ${side} depth — likely whale/informed positioning. `;
+		}
+
+		if (thinSide === "ask" && askDepth < bidDepth * 0.3) {
+			signal += "Very thin ask side — limited exit liquidity for Yes holders.";
+		} else if (thinSide === "bid" && bidDepth < askDepth * 0.3) {
+			signal += "Very thin bid side — limited exit liquidity for No holders.";
+		}
+
+		return JSON.stringify({
+			bid_depth: Math.round(bidDepth * 100) / 100,
+			ask_depth: Math.round(askDepth * 100) / 100,
+			bid_ask_imbalance: imbalance,
+			thin_side: thinSide,
+			bid_concentration_top3_pct: bidConcentration,
+			ask_concentration_top3_pct: askConcentration,
+			bid_order_count: bids.length,
+			ask_order_count: asks.length,
+			flow_signal: signal.trim(),
+		});
+	} catch (err) {
+		return JSON.stringify({ error: `Failed to analyze order flow: ${(err as Error).message}` });
+	}
+}
+
+async function detectMispricing(eventId: string | undefined, marketId: string | undefined): Promise<string> {
+	try {
+		const db = getDb();
+
+		// Mode 1: Compare a single market's DB price vs live CLOB price
+		if (marketId && !eventId) {
+			const rows = await db.unsafe(
+				"SELECT question, last_price, token_id_yes FROM v_market_overview WHERE market_id = $1 LIMIT 1",
+				[marketId],
+			);
+			if (rows.length === 0) return JSON.stringify({ error: "Market not found." });
+
+			const market = rows[0];
+			const liveData = await fetchJson<{ price: string }>(
+				`${CLOB_BASE}/price?token_id=${market.token_id_yes}&side=buy`,
+			);
+			const livePrice = Number(liveData.price);
+			const dbPrice = Number(market.last_price);
+			const delta = Math.round((livePrice - dbPrice) * 10000) / 10000;
+
+			return JSON.stringify({
+				question: market.question,
+				db_price: dbPrice,
+				live_price: livePrice,
+				delta,
+				stale: Math.abs(delta) > 0.03,
+				note:
+					Math.abs(delta) > 0.03
+						? `Price moved ${delta > 0 ? "up" : "down"} ${Math.abs(Math.round(delta * 100))}pp since last DB snapshot.`
+						: "Prices are in sync.",
+			});
+		}
+
+		// Mode 2: Compare all markets within an event
+		if (eventId) {
+			const rows = await db.unsafe(
+				"SELECT market_id, question, last_price, token_id_yes FROM v_market_overview WHERE event_id = $1 ORDER BY volume DESC LIMIT 20",
+				[eventId],
+			);
+			if (rows.length === 0) return JSON.stringify({ error: "No markets found for this event." });
+
+			// For multi-outcome events, Yes prices should sum to ~1.0
+			const totalImpliedProb = rows.reduce((s, r) => s + Number(r.last_price), 0);
+			const overround = Math.round((totalImpliedProb - 1) * 10000) / 10000;
+
+			const markets = rows.map((r) => ({
+				market_id: r.market_id,
+				question: r.question,
+				implied_prob: Number(r.last_price),
+			}));
+
+			return JSON.stringify({
+				event_id: eventId,
+				market_count: rows.length,
+				total_implied_prob: Math.round(totalImpliedProb * 10000) / 10000,
+				overround,
+				overround_pct: `${Math.round(overround * 100)}%`,
+				mispriced: Math.abs(overround) > 0.05,
+				note:
+					Math.abs(overround) > 0.05
+						? `Implied probabilities sum to ${Math.round(totalImpliedProb * 100)}% (should be ~100%). ${overround > 0 ? "Overpriced" : "Underpriced"} by ${Math.abs(Math.round(overround * 100))}pp.`
+						: "Probabilities are well-calibrated across markets.",
+				markets,
+			});
+		}
+
+		return JSON.stringify({ error: "Provide either event_id or market_id." });
+	} catch (err) {
+		return JSON.stringify({ error: `Failed to detect mispricing: ${(err as Error).message}` });
 	}
 }
 

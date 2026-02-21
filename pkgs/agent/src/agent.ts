@@ -49,6 +49,24 @@ export async function runAgent(messages: Anthropic.MessageParam[], callbacks: Ag
 
 		// If Claude is done talking, we're finished
 		if (response.stop_reason === "end_turn") {
+			// Guard: if this is the first round and the model used no tools,
+			// nudge it to either use a tool or ask a clarifying question.
+			const usedTools = response.content.some((b) => b.type === "tool_use");
+			if (rounds === 1 && !usedTools) {
+				const textContent = response.content
+					.filter((b) => b.type === "text")
+					.map((b) => (b as Anthropic.TextBlock).text)
+					.join("");
+				// Only nudge if the response is short and vague (not a substantive answer)
+				if (textContent.length < 300) {
+					messages.push({
+						role: "user",
+						content:
+							"You didn't use any tools to answer. If the question involves market data, prices, or analysis, please use the available tools to provide data-backed answers. If the question is ambiguous, ask a clarifying question.",
+					});
+					continue;
+				}
+			}
 			return;
 		}
 

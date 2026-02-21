@@ -26,7 +26,9 @@ async function main() {
 	// 1. Fetch recent queries
 	const queries = await db.unsafe(
 		`SELECT user_message, tool_count, latency_ms, error,
-		        array_to_string(ARRAY(SELECT jsonb_array_elements_text(tools_used)), ', ') AS tools_list
+		        CASE WHEN jsonb_typeof(tools_used) = 'array'
+		             THEN array_to_string(ARRAY(SELECT jsonb_array_elements_text(tools_used)), ', ')
+		             ELSE '' END AS tools_list
 		 FROM user_queries
 		 WHERE created_at > now() - make_interval(hours => $1)
 		 ORDER BY created_at DESC
