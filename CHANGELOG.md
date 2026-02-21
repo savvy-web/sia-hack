@@ -4,6 +4,34 @@ All notable changes to Overfit are documented here.
 
 ## [Unreleased]
 
+### Voice & Sound Effects — 2026-02-21
+
+#### Sound Effects
+
+- **SFX Engine** — 11 synthesized sound effects via Web Audio API (zero payload
+  cost). Sounds trigger on degen keywords during streaming: crash (rekt/rug),
+  rocket (moon/pump), ching (mispriced/edge), whale, monkey (ape), cheer
+  (lfg/wagmi), sad (ngmi/cooked), dice (degen), bell (gigabrain), boom (chad
+  move), alarm (squeeze).
+- Keyword scanner tracks scan offset to avoid re-scanning, limits to 1 SFX per
+  text chunk, and prevents repeats within a single response.
+
+#### Text-to-Speech
+
+- **ElevenLabs TTS proxy** (`POST /tts`) — Server-side proxy that strips
+  markdown, truncates to 4000 chars at sentence boundaries, and streams audio
+  via ElevenLabs `eleven_flash_v2_5` model (~75ms latency).
+- **TTS client** — After stream completes, full response is read aloud. Replay
+  button appended to each voiced message for re-listening.
+- Graceful degradation: no API key → TTS silently disabled, all other features
+  work normally.
+
+#### UI
+
+- **SFX toggle** (🔊 SFX) — defaults ON, persisted in sessionStorage.
+- **Voice toggle** (🗣️ Voice) — defaults OFF, persisted in sessionStorage.
+- Toggle buttons in header with magenta glow when active.
+
 ### Self-Improvement Cycle 3 — 2026-02-21
 
 Proposals generated from 26 user queries (9 sessions) via `/self-improve`.

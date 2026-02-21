@@ -17,6 +17,8 @@ import { logQuery } from "./query-logger.js";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT) || 8080;
 const AUTH_PASSWORD = process.env.AUTH_PASSWORD || "sia-hack-feb21";
+const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY || "";
+const ELEVENLABS_VOICE_ID = process.env.ELEVENLABS_VOICE_ID || "JBFqnCBsd6RMkjVDRZzb";
 
 // ---------------------------------------------------------------------------
 // Auth — simple token-based gate
@@ -133,6 +135,13 @@ const server = Bun.serve({
 			const sessionId = req.headers.get("x-session-id") || "default";
 			sessions.delete(sessionId);
 			return Response.json({ ok: true });
+		}
+
+		// TTS proxy (auth required)
+		if (url.pathname === "/tts" && req.method === "POST") {
+			const denied = requireAuth(req);
+			if (denied) return denied;
+			return handleTts(req);
 		}
 
 		// Changelog page
@@ -285,6 +294,106 @@ function fastReject(message: string): string | null {
 		if (pattern.test(lower)) return response;
 	}
 	return null;
+}
+
+// ---------------------------------------------------------------------------
+// TTS proxy — streams ElevenLabs audio back to the client
+// ---------------------------------------------------------------------------
+
+function stripMarkdown(text: string): string {
+	return (
+		text
+			// Code blocks
+			.replace(/```[\s\S]*?```/g, "")
+			// Tables (header + separator + rows)
+			.replace(/^\|.*\|$/gm, "")
+			// URLs
+			.replace(/https?:\/\/\S+/g, "")
+			// Images / links
+			.replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1")
+			// Headers
+			.replace(/^#{1,6}\s+/gm, "")
+			// Bold / italic
+			.replace(/[*_]{1,3}([^*_]+)[*_]{1,3}/g, "$1")
+			// Inline code
+			.replace(/`([^`]+)`/g, "$1")
+			// Horizontal rules
+			.replace(/^---+$/gm, "")
+			// List markers
+			.replace(/^[-*]\s+/gm, "")
+			.replace(/^\d+\.\s+/gm, "")
+			// Collapse whitespace
+			.replace(/\n{3,}/g, "\n\n")
+			.trim()
+	);
+}
+
+function truncateAtSentence(text: string, maxLen: number): string {
+	if (text.length <= maxLen) return text;
+	const truncated = text.slice(0, maxLen);
+	const lastSentence = truncated.search(/[.!?]\s+[^.!?]*$/);
+	if (lastSentence > maxLen * 0.5) {
+		return truncated.slice(0, lastSentence + 1);
+	}
+	return truncated;
+}
+
+async function handleTts(req: Request): Promise<Response> {
+	if (!ELEVENLABS_API_KEY) {
+		return Response.json({ error: "TTS not configured" }, { status: 503 });
+	}
+
+	let body: { text: string };
+	try {
+		body = await req.json();
+	} catch {
+		return new Response("Invalid JSON", { status: 400 });
+	}
+
+	if (!body.text || typeof body.text !== "string") {
+		return new Response("Missing text field", { status: 400 });
+	}
+
+	const cleanText = truncateAtSentence(stripMarkdown(body.text), 4000);
+	if (!cleanText) {
+		return new Response("Empty text after cleanup", { status: 400 });
+	}
+
+	try {
+		const ttsRes = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}/stream`, {
+			method: "POST",
+			headers: {
+				"xi-api-key": ELEVENLABS_API_KEY,
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				text: cleanText,
+				model_id: "eleven_flash_v2_5",
+				output_format: "mp3_44100_128",
+				voice_settings: {
+					stability: 0.5,
+					similarity_boost: 0.75,
+					speed: 1.1,
+				},
+			}),
+		});
+
+		if (!ttsRes.ok) {
+			const errText = await ttsRes.text().catch(() => "Unknown error");
+			console.error(`ElevenLabs API error ${ttsRes.status}: ${errText}`);
+			return Response.json({ error: "TTS API error" }, { status: 502 });
+		}
+
+		return new Response(ttsRes.body, {
+			headers: {
+				"Content-Type": "audio/mpeg",
+				"Cache-Control": "no-cache",
+			},
+		});
+	} catch (err) {
+		console.error("TTS proxy error:", err);
+		return Response.json({ error: "TTS proxy failed" }, { status: 502 });
+	}
 }
 
 async function handleChat(req: Request): Promise<Response> {
