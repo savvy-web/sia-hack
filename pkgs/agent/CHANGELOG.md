@@ -4,6 +4,29 @@ All notable changes to the Oracle agent are documented here.
 
 ## [Unreleased]
 
+### Self-Improvement Cycle 2 — 2026-02-21
+
+Proposals generated from 17 user queries (7 sessions) via `/self-improve`.
+
+#### Prompt Improvements
+
+- **Scope & gambling guardrails** (#7) — Overfit now clearly defines its scope
+  (Polymarket only) and fast-deflects casino/poker/sports betting questions with
+  a charming 1-sentence redirect instead of burning 6-13s deliberating.
+- **Jailbreak resistance** (#8) — Identity anchoring added. Overfit laughs off
+  persona override attempts (fiduciary, unicorn, pink pony, blackmail) in one
+  sentence and redirects to markets.
+- **Named entity resolution** (#13) — When users mention people/events (Trump,
+  JD Vance, Ronaldo), Overfit now searches for them as market keywords via
+  ILIKE queries instead of guessing.
+
+#### Performance
+
+- **Out-of-scope fast-accept** (#12) — The no-tool guard now recognizes quick
+  deflection responses (out-of-scope redirects, identity assertions) and lets
+  them through immediately instead of nudging for tool use. Reduces latency
+  on off-topic queries from 6-13s to under 3s.
+
 ### Self-Improvement Cycle 1 — 2026-02-21
 
 Proposals generated from user query analysis via `/self-improve`.

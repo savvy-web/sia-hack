@@ -49,15 +49,33 @@ export async function runAgent(messages: Anthropic.MessageParam[], callbacks: Ag
 
 		// If Claude is done talking, we're finished
 		if (response.stop_reason === "end_turn") {
-			// Guard: if this is the first round and the model used no tools,
-			// nudge it to either use a tool or ask a clarifying question.
 			const usedTools = response.content.some((b) => b.type === "tool_use");
 			if (rounds === 1 && !usedTools) {
 				const textContent = response.content
 					.filter((b) => b.type === "text")
 					.map((b) => (b as Anthropic.TextBlock).text)
 					.join("");
-				// Only nudge if the response is short and vague (not a substantive answer)
+
+				// Fast-accept: if the response is a short deflection/redirect
+				// (out-of-scope, jailbreak, identity), just return it immediately.
+				// The system prompt already handles these with brief, charming replies.
+				// Only nudge if the response seems like the model stalled on an
+				// in-scope question without using tools.
+				const looksLikeDeflection =
+					textContent.length < 500 &&
+					(textContent.includes("prediction market") ||
+						textContent.includes("Polymarket") ||
+						textContent.includes("Overfit") ||
+						textContent.includes("NFA") ||
+						textContent.includes("I'm ") ||
+						textContent.includes("not a "));
+
+				if (looksLikeDeflection) {
+					// Good — the model is handling an off-topic query quickly. Let it through.
+					return;
+				}
+
+				// Nudge: the model didn't use tools on what might be an in-scope question
 				if (textContent.length < 300) {
 					messages.push({
 						role: "user",
