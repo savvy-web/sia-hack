@@ -1,8 +1,34 @@
 # Changelog
 
-All notable changes to the Oracle agent are documented here.
+All notable changes to Overfit are documented here.
 
 ## [Unreleased]
+
+### Rebrand — 2026-02-21
+
+Renamed from "Oracle" to **Overfit: Your Degenerate Friend** for the
+[overfit.lol](https://overfit.lol) hackathon demo.
+
+#### Frontend
+
+- Complete UI overhaul: casino color scheme (magenta/gold/neon gradients),
+  animated fire header, glow effects, slide-in messages, error shake animation.
+- Degen Score counter in the header that ticks up with each query and tool call.
+- Rotating degen quotes on the welcome screen.
+- Gambling-themed suggestion chips with emoji (Morning Degen Briefing, Where's
+  the Dumb Money, Most Degen Bet, Crypto Plays, Who's Getting Rekt, Political
+  Degen).
+- Per-tool emoji badges (whale for order flow, target for mispricing, chart for
+  prices, etc.) with spinning animation while executing.
+- Auth screen: "prove you're not a normie", slot machine emoji, "LFG" button.
+- Error messages now say "rekt" because of course they do.
+
+#### Personality
+
+- System prompt personality overhaul: Overfit is an enthusiastic, slightly
+  unhinged trading friend who backs vibes with actual data.
+- Uses degen slang naturally (rekt, ape, moon, ngmi, wagmi, lfg, copium,
+  hopium) while still providing rigorous analysis.
 
 ### Self-Improvement Cycle 2 — 2026-02-21
 
@@ -29,7 +55,7 @@ Proposals generated from 17 user queries (7 sessions) via `/self-improve`.
 
 ### Self-Improvement Cycle 1 — 2026-02-21
 
-Proposals generated from user query analysis via `/self-improve`.
+Proposals generated from 1 user query via `/self-improve`.
 
 #### New Tools
 
@@ -42,7 +68,7 @@ Proposals generated from user query analysis via `/self-improve`.
 
 #### Prompt Improvements
 
-- **Ambiguous market reference handling** (#2) — Oracle now asks a clarifying
+- **Ambiguous market reference handling** (#2) — Overfit now asks a clarifying
   question when users say "this market" or "the market" without specifying which
   one, instead of stalling or guessing.
 - **Trading jargon glossary** (#5) — System prompt now maps common financial
@@ -59,3 +85,10 @@ Proposals generated from user query analysis via `/self-improve`.
 
 - Fixed `improve.ts` crash when `tools_used` column contains a scalar instead
   of a JSON array (added `jsonb_typeof` guard).
+
+### `/self-improve` Skill — 2026-02-21
+
+Added `.claude/skills/self-improve/SKILL.md` — a Claude Code skill that
+orchestrates the full self-improvement feedback loop in 6 phases: generate
+proposals, gather analytics, score and prioritize, present plan with approval
+gate, implement changes, and deploy.
