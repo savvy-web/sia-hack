@@ -1,0 +1,24 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig.json",
+	"compilerOptions": {
+		"composite": true,
+		"declaration": true,
+		"module": "node20",
+		"outDir": "dist",
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"strictNullChecks": true,
+		"target": "es2023"
+	},
+	"exclude": ["node_modules", "dist"],
+	"include": ["lib/**/*.ts", "types/**/*.d.ts", "*.ts"],
+	"references": [
+		{
+			"path": "./pkgs/example-module"
+		},
+		{
+			"path": "./pkgs/example-module-2"
+		}
+	]
+}

@@ -1,0 +1,55 @@
+{
+	"name": "@savvy-web/example-module",
+	"version": "0.0.0",
+	"description": "Example ECMA module package",
+	"keywords": [],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/savvy-web/pnpm-monorepo-template.git",
+		"directory": "pkgs/example-module"
+	},
+	"license": "MIT",
+	"author": {
+		"name": "C. Spencer Beggs",
+		"email": "spencer@savvyweb.systems",
+		"url": "https://savvyweb.systems"
+	},
+	"type": "module",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"scripts": {
+		"build:dev": "rslib build --config-loader native --env-mode dev",
+		"build:inspect": "rslib inspect --config-loader native --env-mode npm --verbose",
+		"build:prod": "rslib build --config-loader native --env-mode npm",
+		"types:check": "tsgo --noEmit"
+	},
+	"devDependencies": {
+		"@savvy-web/rslib-builder": "^0.14.5",
+		"vitest": "catalog:silk"
+	},
+	"engines": {
+		"node": ">=20.0.0"
+	},
+	"publishConfig": {
+		"access": "public",
+		"dist": "dist/dev",
+		"linkDirectory": true,
+		"targets": [
+			{
+				"protocol": "npm",
+				"registry": "https://npm.pkg.github.com/",
+				"directory": "dist/npm",
+				"access": "public",
+				"provenance": true
+			},
+			{
+				"protocol": "npm",
+				"registry": "https://registry.npmjs.org/",
+				"directory": "dist/npm",
+				"access": "public",
+				"provenance": true
+			}
+		]
+	}
+}
