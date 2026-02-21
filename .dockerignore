@@ -3,6 +3,7 @@ node_modules
 .env
 .env.*
 *.md
+!CHANGELOG.md
 !pkgs/*/package.json
 
 # Packages not needed in the image
