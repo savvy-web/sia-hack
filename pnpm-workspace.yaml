@@ -2,10 +2,10 @@ packages:
   - .
   - pkgs/*
 catalog:
-  "@savvy-web/changesets": ^0.1.2
-  "@savvy-web/commitlint": ^0.3.4
-  "@savvy-web/lint-staged": ^0.4.6
-  "@savvy-web/vitest": ^0.1.0
+  "@savvy-web/changesets": ^0.4.2
+  "@savvy-web/commitlint": ^0.4.0
+  "@savvy-web/lint-staged": ^0.5.1
+  "@savvy-web/vitest": ^0.2.0
 catalogMode: strict
 configDependencies:
   "@savvy-web/pnpm-plugin-silk": 0.6.3+sha512-P2oTH3CRDxvEqVtavf5adiX2B4MQGU2GA2INDBwrDHiPJLWke3Sjpqr5tgba3+gc1wyDS5YgELsWizAr94WkDQ==
